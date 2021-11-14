@@ -1,5 +1,7 @@
 use eframe::{
-    egui::{self, Color32, Frame, Painter, Pos2, Rect, Shape, Ui},
+    egui::{
+        self, emath::RectTransform, pos2, vec2, Color32, Frame, Painter, Pos2, Rect, Shape, Ui,
+    },
     epi,
 };
 
@@ -8,28 +10,53 @@ pub struct MyApp {}
 
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
-        ui.ctx().request_repaint();
-        let paint_rect = ui.available_rect_before_wrap();
-        let painter = Painter::new(ui.ctx().clone(), ui.layer_id(), paint_rect);
-        self.paint(&painter);
+        self.paint(ui);
         // Make sure we allocate what we used (everything)
-        ui.expand_to_include_rect(painter.clip_rect());
+        // ui.expand_to_include_rect(painter.clip_rect());
     }
 
-    fn paint(&mut self, painter: &Painter) {
+    fn paint(&mut self, ui: &mut Ui) {
+        ui.ctx().request_repaint();
+
+        let rect = ui.available_rect_before_wrap();
+
+        let painter = Painter::new(ui.ctx().clone(), ui.layer_id(), rect);
+
         let mut shapes: Vec<Shape> = Vec::new();
-        let x_start = 300.0;
-        for row in 0..10 {
-            for col in 0..10 {
-                let rect = Shape::rect_filled(
+        const ROW: i32 = 10;
+        const COL: i32 = 10;
+        const NODE_WIDTH: f32 = 50.0;
+        const INTERVAL: f32 = 10.0;
+
+        let mut x_start = (rect.width() - (NODE_WIDTH + INTERVAL) * ROW as f32 - INTERVAL) / 2.0;
+        let mut y_start = (rect.height() - (NODE_WIDTH + INTERVAL) * COL as f32 - INTERVAL) / 2.0;
+        if x_start < 0.0 || y_start < 0.0 {
+            return;
+        }
+
+        x_start = rect.left() + x_start;
+        y_start = rect.top() + y_start;
+
+        let shape = Shape::rect_filled(rect, 10.0, Color32::RED);
+        shapes.push(shape);
+
+        for row in 0..ROW {
+            for col in 0..COL {
+                let shape = Shape::rect_filled(
                     Rect::from_two_pos(
-                        Pos2::new(x_start + 50.0 * col as f32 + 10.0, 50.0 * row as f32 + 10.0),
-                        Pos2::new(x_start + 50.0 * (col + 1) as f32, 50.0 * (row + 1) as f32),
+                        pos2(
+                            x_start + NODE_WIDTH * col as f32 + 10.0,
+                            y_start + NODE_WIDTH * row as f32 + 10.0,
+                        ),
+                        pos2(
+                            x_start + NODE_WIDTH * (col + 1) as f32,
+                            y_start + NODE_WIDTH * (row + 1) as f32,
+                        ),
                     ),
                     10.0,
                     Color32::GOLD,
                 );
-                shapes.push(rect);
+                shapes.push(shape);
             }
         }
 
@@ -60,6 +87,8 @@ impl epi::App for MyApp {
 }
 
 fn main() {
-    let native_options = eframe::NativeOptions::default();
+    let native_options = eframe::NativeOptions {
+        ..Default::default()
+    };
     eframe::run_native(Box::new(MyApp::default()), native_options);
 }
