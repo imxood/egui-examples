@@ -1,0 +1,21 @@
+[package]
+name = "test-egui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# eframe = "0.15.0" # Gives us egui, epi and web+native backends
+eframe = { git = "https://github.com/emilk/egui", branch = "master" }
+serde = { version = "1", features = ["derive"], optional = true }
+
+[features]
+default = ["persistence"]
+persistence = [
+    "eframe/persistence",
+    "serde",
+] # Enable if you want to persist app state on shutdown
+
+[profile.release]
+opt-level = 2 # fast and small wasm
+
+[patch.crates-io]
