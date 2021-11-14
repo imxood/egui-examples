@@ -9,11 +9,8 @@ pub struct MyApp {}
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
         ui.ctx().request_repaint();
-        let painter = Painter::new(
-            ui.ctx().clone(),
-            ui.layer_id(),
-            ui.available_rect_before_wrap(),
-        );
+        let paint_rect = ui.available_rect_before_wrap();
+        let painter = Painter::new(ui.ctx().clone(), ui.layer_id(), paint_rect);
         self.paint(&painter);
         // Make sure we allocate what we used (everything)
         ui.expand_to_include_rect(painter.clip_rect());
@@ -21,19 +18,21 @@ impl MyApp {
 
     fn paint(&mut self, painter: &Painter) {
         let mut shapes: Vec<Shape> = Vec::new();
-        let rect = Shape::rect_filled(
-            Rect::from_two_pos(Pos2::new(100.0, 100.0), Pos2::new(200.0, 200.0)),
-            10.0,
-            Color32::GOLD,
-        );
-        shapes.push(rect);
+        let x_start = 300.0;
+        for row in 0..10 {
+            for col in 0..10 {
+                let rect = Shape::rect_filled(
+                    Rect::from_two_pos(
+                        Pos2::new(x_start + 50.0 * col as f32 + 10.0, 50.0 * row as f32 + 10.0),
+                        Pos2::new(x_start + 50.0 * (col + 1) as f32, 50.0 * (row + 1) as f32),
+                    ),
+                    10.0,
+                    Color32::GOLD,
+                );
+                shapes.push(rect);
+            }
+        }
 
-        let rect = Shape::rect_filled(
-            Rect::from_two_pos(Pos2::new(250.0, 250.0), Pos2::new(350.0, 350.0)),
-            10.0,
-            Color32::GOLD,
-        );
-        shapes.push(rect);
         painter.extend(shapes);
     }
 }
@@ -49,6 +48,10 @@ impl epi::App for MyApp {
                 ui.heading("💻 Test");
                 ui.label("hello, the world");
             });
+            let mut debug_on_hover = ui.ctx().debug_on_hover();
+            ui.checkbox(&mut debug_on_hover, "🐛 Debug on hover")
+                .on_hover_text("Show structure of the ui when you hover with the mouse");
+            ui.ctx().set_debug_on_hover(debug_on_hover);
         });
         egui::CentralPanel::default()
             .frame(Frame::dark_canvas(&ctx.style()))

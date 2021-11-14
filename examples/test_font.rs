@@ -29,7 +29,7 @@ impl epi::App for MyApp {
         let mut fonts = FontDefinitions::default();
         fonts.font_data.insert(
             "DroidSansFallbackFull".to_owned(),
-            FontData::from_static(include_bytes!("../src/fonts/DroidSansFallbackFull.ttf")),
+            FontData::from_static(include_bytes!("../fonts/DroidSansFallbackFull.ttf")),
         ); // .ttf and .otf supported
         fonts
             .fonts_for_family
