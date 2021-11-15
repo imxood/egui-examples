@@ -27,36 +27,31 @@ impl MyApp {
         let shape = Shape::rect_filled(rect, 10.0, Color32::RED);
         shapes.push(shape);
 
-        const ROW: i32 = 10;
-        const COL: i32 = 10;
-        const NODE_SIZE: f32 = 50.0;
-        const INTERVAL: f32 = 10.0;
+        const ROW: i32 = 10 * 4;
+        const COL: i32 = 12 * 4;
+        const NODE_SIZE: f32 = 20.0;
+        const INTERVAL: f32 = 3.0;
+        const ZOOM: f32 = 1.5;
 
-        let mut x_start = (rect.width() - (NODE_SIZE + INTERVAL) * ROW as f32 + INTERVAL) / 2.0;
-        let mut y_start = (rect.height() - (NODE_SIZE + INTERVAL) * COL as f32 + INTERVAL) / 2.0;
-        
-        if x_start < 0.0 || y_start < 0.0 {
-            return;
-        }
+        // println!("rect: {:?}, w: {}, h: {}, x_start: {}, y_start: {}", &rect, rect.width(), rect.height(), x_start, y_start);
 
-        println!("rect: {:?}, w: {}, h: {}, x_start: {}, y_start: {}", &rect, rect.width(), rect.height(), x_start, y_start);
+        // 矩形空间, 每一行 和 每一列 的开头和结尾 都填充一个 NODE_SIZE
+        let width = (NODE_SIZE + INTERVAL) * (COL + 2) as f32 - INTERVAL;
+        let height = (NODE_SIZE + INTERVAL) * (ROW + 2) as f32 - INTERVAL;
 
-        x_start = rect.left() + x_start;
-        y_start = rect.top() + y_start;
+        // 从给出的一个矩形空间 转换到 屏幕尺寸 空间, 并缩放
+        let to_screen =
+            RectTransform::from_to(Rect::from_min_size(Pos2::ZERO, vec2(1.0, 1.0)), rect);
 
+        // 每一行 和 每一列 的开头和结尾 都填充一个 NODE_SIZE
         for row in 0..ROW {
-            let y_start = y_start + (NODE_SIZE + INTERVAL) * row as f32;
+            let y_start = (NODE_SIZE + INTERVAL) * (row + 1) as f32;
             for col in 0..COL {
+                let x_start = (NODE_SIZE + INTERVAL) * (col + 1) as f32;
                 let shape = Shape::rect_filled(
                     Rect::from_two_pos(
-                        pos2(
-                            x_start + (NODE_SIZE + INTERVAL) * col as f32,
-                            y_start,
-                        ),
-                        pos2(
-                            x_start + (NODE_SIZE + INTERVAL) * col as f32 + NODE_SIZE,
-                            y_start + NODE_SIZE,
-                        ),
+                        to_screen * pos2(x_start, y_start),
+                        to_screen * pos2(x_start + NODE_SIZE, y_start + NODE_SIZE),
                     ),
                     10.0,
                     Color32::GOLD,
