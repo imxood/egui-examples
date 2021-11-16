@@ -8,6 +8,13 @@ use eframe::{
 };
 use test_egui::frame_history::FrameHistory;
 
+fn main() {
+    let native_options = eframe::NativeOptions {
+        ..Default::default()
+    };
+    eframe::run_native(Box::new(MyApp::default()), native_options);
+}
+
 #[derive(Default)]
 pub struct MyApp {
     frame_history: FrameHistory,
@@ -29,8 +36,6 @@ impl MyApp {
         const NODE_SIZE: f32 = 20.0;
         const INTERVAL: f32 = 3.0;
 
-        let mut shapes: Vec<Shape> = Vec::new();
-
         let rect = painter.clip_rect();
 
         // 矩形空间, 每一行 和 每一列 的开头和结尾 都填充一个 NODE_SIZE
@@ -46,19 +51,16 @@ impl MyApp {
             let y_start = (NODE_SIZE + INTERVAL) * (row + 1) as f32;
             for col in 0..COL {
                 let x_start = (NODE_SIZE + INTERVAL) * (col + 1) as f32;
-                let shape = Shape::rect_filled(
+                painter.rect_filled(
                     Rect::from_two_pos(
                         to_screen * pos2(x_start, y_start),
                         to_screen * pos2(x_start + NODE_SIZE, y_start + NODE_SIZE),
                     ),
                     10.0,
                     Color32::GOLD,
-                );
-                shapes.push(shape);
+                )
             }
         }
-        println!("count: {}", shapes.len());
-        painter.extend(shapes);
     }
 
     fn run_mode_ui(&mut self, ui: &mut egui::Ui) {
@@ -154,11 +156,4 @@ impl Default for RunMode {
     fn default() -> Self {
         RunMode::Reactive
     }
-}
-
-fn main() {
-    let native_options = eframe::NativeOptions {
-        ..Default::default()
-    };
-    eframe::run_native(Box::new(MyApp::default()), native_options);
 }
