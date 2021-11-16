@@ -1,8 +1,9 @@
-// #![windows_subsystem = "windows"]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use eframe::{
     egui::{
-        self, emath::RectTransform, pos2, vec2, Color32, Frame, Painter, Pos2, Rect, Shape, Ui,
+        self, emath::RectTransform, epaint::Mesh, pos2, vec2, Color32, Frame, Pos2, Rect, Sense,
+        Shape, Ui,
     },
     epi,
 };
@@ -23,18 +24,20 @@ pub struct MyApp {
 
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
-        // ui.ctx().request_repaint();
-
-        let painter = Painter::new(
-            ui.ctx().clone(),
-            ui.layer_id(),
-            ui.available_rect_before_wrap(),
-        );
+        ui.ctx().request_repaint();
+        let (res, painter) =
+            ui.allocate_painter(ui.available_rect_before_wrap().size(), Sense::click());
+        if res.hovered() {
+            println!("painter hovered");
+        }
+        if res.clicked() {
+            println!("painter clicked");
+        }
 
         const ROW: i32 = 10 * 4;
         const COL: i32 = 12 * 4;
         const NODE_SIZE: f32 = 20.0;
-        const INTERVAL: f32 = 3.0;
+        const INTERVAL: f32 = 5.0;
 
         let rect = painter.clip_rect();
 
@@ -46,21 +49,23 @@ impl MyApp {
         let to_screen =
             RectTransform::from_to(Rect::from_min_size(Pos2::ZERO, vec2(width, height)), rect);
 
+        let mut mesh = Mesh::default();
+
         // 每一行 和 每一列 的开头和结尾 都填充一个 NODE_SIZE
         for row in 0..ROW {
             let y_start = (NODE_SIZE + INTERVAL) * (row + 1) as f32;
             for col in 0..COL {
                 let x_start = (NODE_SIZE + INTERVAL) * (col + 1) as f32;
-                painter.rect_filled(
+                mesh.add_colored_rect(
                     Rect::from_two_pos(
                         to_screen * pos2(x_start, y_start),
                         to_screen * pos2(x_start + NODE_SIZE, y_start + NODE_SIZE),
                     ),
-                    10.0,
                     Color32::GOLD,
-                )
+                );
             }
         }
+        painter.add(Shape::Mesh(mesh));
     }
 
     fn run_mode_ui(&mut self, ui: &mut egui::Ui) {
@@ -94,7 +99,7 @@ impl epi::App for MyApp {
         self.frame_history
             .on_new_frame(ctx.input().time, frame.info().cpu_usage);
 
-        egui::SidePanel::left("left").show(ctx, |ui| {
+        egui::SidePanel::right("right").show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 ui.heading("💻 Test");
                 ui.label("hello, the world");
@@ -111,9 +116,15 @@ impl epi::App for MyApp {
             // fps
             self.frame_history.ui(ui);
         });
+
         egui::CentralPanel::default()
             .frame(Frame::dark_canvas(&ctx.style()))
             .show(ctx, |ui| self.ui(ui));
+
+        let events = &ctx.output().events;
+        if !events.is_empty() {
+            println!("events: {:?}", events);
+        }
     }
 }
 
