@@ -1,7 +1,7 @@
 use eframe::{
     egui::{
-        self, vec2, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, Label,
-        RichText, Sense, Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText, Button,
+        self, vec2, Align, Button, Color32, FontData, FontDefinitions, FontFamily, RichText, Sense,
+        Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText,
     },
     epi,
 };
@@ -29,6 +29,9 @@ impl Default for MyApp {
 
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            ui.label("hello world");
+        });
         egui::Grid::new("some_unique_id")
             // 长度为2, 第2列宽度是剩余的宽度
             .num_columns(2)
@@ -38,14 +41,17 @@ impl MyApp {
                 */
 
                 ui.with_layout(egui::Layout::bottom_up(Align::Center), |ui| {
-                    // ui.add_sized(vec2(30.0, 80.0), Label::new("测试工位"));
+                    // 发现 手动设置高度后, 就感觉是浮动了?
+                    // println!("ui.available_size(): {:?}", ui.available_size());
 
                     // 代码实现仿按钮
 
                     // 创建文字
+                    let text = WidgetText::RichText(
+                        RichText::new("测试工位").color(Color32::LIGHT_RED),
+                    );
                     let text =
-                        WidgetText::RichText(RichText::new("测试工位").color(Color32::LIGHT_RED));
-                    let text = text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
+                        text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
 
                     // 分配文字区域
                     // let size = text.size() + vec2(20.0, 0.0);
@@ -70,8 +76,10 @@ impl MyApp {
                 });
 
                 ui.with_layout(egui::Layout::top_down_justified(Align::Center), |ui| {
-                    ui.set_height(30.0);
-                    Button::new(RichText::new(self.status.clone()).color(Color32::GREEN)).fill(Color32::YELLOW).ui(ui);
+                    Button::new(RichText::new(self.status.clone()).color(Color32::GREEN))
+                        .fill(Color32::YELLOW)
+                        .stroke(Stroke::none())
+                        .ui(ui);
                 });
 
                 ui.end_row();
@@ -127,6 +135,9 @@ impl epi::App for MyApp {
         // 设置主题
         ctx.set_visuals(Visuals::light());
         ctx.set_pixels_per_point(10.0);
+
+        // 调试
+        ctx.set_debug_on_hover(true);
 
         // 设置字体
         let mut fonts = FontDefinitions::default();
