@@ -1,7 +1,7 @@
 use eframe::{
     egui::{
-        self, vec2, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, RichText,
-        Sense, Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText,
+        self, vec2, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, Label,
+        RichText, Sense, Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText, Button,
     },
     epi,
 };
@@ -13,9 +13,18 @@ fn main() {
     eframe::run_native(Box::new(MyApp::default()), native_options);
 }
 
-#[derive(Default)]
 pub struct MyApp {
     text_code: String,
+    status: String,
+}
+
+impl Default for MyApp {
+    fn default() -> Self {
+        Self {
+            text_code: "xx1839894303920901213".into(),
+            status: "PASS".into(),
+        }
+    }
 }
 
 impl MyApp {
@@ -24,8 +33,6 @@ impl MyApp {
             // 长度为2, 第2列宽度是剩余的宽度
             .num_columns(2)
             .show(ui, |ui| {
-                ui.set_height(30.0);
-
                 /*
                     第 1 行
                 */
@@ -62,17 +69,10 @@ impl MyApp {
                     text.paint_with_visuals(ui.painter(), text_pos, visuals);
                 });
 
-                ui.with_layout(
-                    egui::Layout::centered_and_justified(Direction::TopDown),
-                    |ui| {
-                        if ui
-                            .button(WidgetText::RichText(
-                                RichText::new("PASS").color(Color32::GREEN),
-                            ))
-                            .clicked()
-                        {}
-                    },
-                );
+                ui.with_layout(egui::Layout::top_down_justified(Align::Center), |ui| {
+                    ui.set_height(30.0);
+                    Button::new(RichText::new(self.status.clone()).color(Color32::GREEN)).fill(Color32::YELLOW).ui(ui);
+                });
 
                 ui.end_row();
 
@@ -88,9 +88,7 @@ impl MyApp {
                 });
 
                 ui.with_layout(egui::Layout::top_down_justified(Align::LEFT), |ui| {
-                    let mut rect = ui.available_rect_before_wrap();
-                    rect.min.y += 1.0;
-                    rect.max.y -= 1.0;
+                    let rect = ui.available_rect_before_wrap();
 
                     // 画矩形
                     ui.painter().rect(
