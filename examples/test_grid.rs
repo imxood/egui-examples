@@ -1,9 +1,7 @@
-#![windows_subsystem = "windows"]
-
 use eframe::{
     egui::{
-        self, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, RichText, Sense,
-        Stroke, TextStyle, Ui, Visuals, WidgetText,
+        self, vec2, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, RichText,
+        Sense, Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText,
     },
     epi,
 };
@@ -16,7 +14,9 @@ fn main() {
 }
 
 #[derive(Default)]
-pub struct MyApp {}
+pub struct MyApp {
+    text_code: String,
+}
 
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
@@ -41,7 +41,10 @@ impl MyApp {
                     let text = text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
 
                     // 分配文字区域
-                    let (rect, response) = ui.allocate_exact_size(text.size(), Sense::click());
+                    // let size = text.size() + vec2(20.0, 0.0);
+                    let size = vec2(200.0, 20.0);
+                    // println!("size: {:?}", &size);
+                    let (rect, response) = ui.allocate_exact_size(size, Sense::click());
 
                     // 获取可视化
                     let visuals = ui.style().interact(&response);
@@ -78,16 +81,10 @@ impl MyApp {
                 */
 
                 ui.with_layout(egui::Layout::bottom_up(Align::Center), |ui| {
-                    let mut rect = ui.available_rect_before_wrap();
-                    rect.min.x += 5.0;
-                    rect.max.x -= 5.0;
-
-                    ui.painter().rect(
-                        rect,
-                        3.0,
-                        ui.ctx().style().visuals.window_fill(),
-                        Stroke::new(1.0, Color32::BLACK),
-                    );
+                    let rect = ui.available_rect_before_wrap();
+                    TextEdit::singleline(&mut self.text_code)
+                        .desired_width(rect.width())
+                        .ui(ui);
                 });
 
                 ui.with_layout(egui::Layout::top_down_justified(Align::LEFT), |ui| {

@@ -1,5 +1,5 @@
 use eframe::{
-    egui::{self, FontData, FontDefinitions, FontFamily},
+    egui::{self, vec2, Align2, FontData, FontDefinitions, FontFamily},
     epi,
 };
 
@@ -48,15 +48,29 @@ impl epi::App for MyApp {
             ui.vertical_centered(|ui| {
                 ui.label(format!("世界， {}", label));
             });
+
             ui.horizontal(|ui| {
                 ui.label("title:");
                 ui.text_edit_singleline(label);
             });
+
+            egui::Window::new("测试窗口")
+                .id(egui::Id::new("test_window")) // required since we change the title
+                .default_size(vec2(100.0, 60.0))
+                .min_width(100.0)
+                .min_height(50.0)
+                .resizable(false)
+                .collapsible(false)
+                .anchor(Align2::CENTER_CENTER, [0.0, -50.0])
+                .show(ctx, |ui| {});
         });
     }
 }
 
 fn main() {
-    let native_options = eframe::NativeOptions::default();
+    let native_options = eframe::NativeOptions {
+        initial_window_size: Some(vec2(200.0, 150.0)),
+        ..Default::default()
+    };
     eframe::run_native(Box::new(MyApp::default()), native_options);
 }
