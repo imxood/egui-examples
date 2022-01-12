@@ -1,9 +1,7 @@
-#![windows_subsystem = "windows"]
-
 use eframe::{
     egui::{
-        self, Align, Color32, Direction, FontData, FontDefinitions, FontFamily, RichText, Sense,
-        Stroke, TextStyle, Ui, Visuals, WidgetText,
+        self, vec2, Align, Button, Color32, FontData, FontDefinitions, FontFamily, RichText, Sense,
+        Stroke, TextEdit, TextStyle, Ui, Visuals, Widget, WidgetText,
     },
     epi,
 };
@@ -15,33 +13,51 @@ fn main() {
     eframe::run_native(Box::new(MyApp::default()), native_options);
 }
 
-#[derive(Default)]
-pub struct MyApp {}
+pub struct MyApp {
+    text_code: String,
+    status: String,
+}
+
+impl Default for MyApp {
+    fn default() -> Self {
+        Self {
+            text_code: "xx1839894303920901213".into(),
+            status: "PASS".into(),
+        }
+    }
+}
 
 impl MyApp {
     pub fn ui(&mut self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            ui.label("hello world");
+        });
         egui::Grid::new("some_unique_id")
             // 长度为2, 第2列宽度是剩余的宽度
             .num_columns(2)
             .show(ui, |ui| {
-                ui.set_height(30.0);
-
                 /*
                     第 1 行
                 */
 
                 ui.with_layout(egui::Layout::bottom_up(Align::Center), |ui| {
-                    // ui.add_sized(vec2(30.0, 80.0), Label::new("测试工位"));
+                    // 发现 手动设置高度后, 就感觉是浮动了?
+                    // println!("ui.available_size(): {:?}", ui.available_size());
 
                     // 代码实现仿按钮
 
                     // 创建文字
+                    let text = WidgetText::RichText(
+                        RichText::new("测试工位").color(Color32::LIGHT_RED),
+                    );
                     let text =
-                        WidgetText::RichText(RichText::new("测试工位").color(Color32::LIGHT_RED));
-                    let text = text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
+                        text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
 
                     // 分配文字区域
-                    let (rect, response) = ui.allocate_exact_size(text.size(), Sense::click());
+                    // let size = text.size() + vec2(20.0, 0.0);
+                    let size = vec2(200.0, 20.0);
+                    // println!("size: {:?}", &size);
+                    let (rect, response) = ui.allocate_exact_size(size, Sense::click());
 
                     // 获取可视化
                     let visuals = ui.style().interact(&response);
@@ -59,17 +75,12 @@ impl MyApp {
                     text.paint_with_visuals(ui.painter(), text_pos, visuals);
                 });
 
-                ui.with_layout(
-                    egui::Layout::centered_and_justified(Direction::TopDown),
-                    |ui| {
-                        if ui
-                            .button(WidgetText::RichText(
-                                RichText::new("PASS").color(Color32::GREEN),
-                            ))
-                            .clicked()
-                        {}
-                    },
-                );
+                ui.with_layout(egui::Layout::top_down_justified(Align::Center), |ui| {
+                    Button::new(RichText::new(self.status.clone()).color(Color32::GREEN))
+                        .fill(Color32::YELLOW)
+                        .stroke(Stroke::none())
+                        .ui(ui);
+                });
 
                 ui.end_row();
 
@@ -78,22 +89,14 @@ impl MyApp {
                 */
 
                 ui.with_layout(egui::Layout::bottom_up(Align::Center), |ui| {
-                    let mut rect = ui.available_rect_before_wrap();
-                    rect.min.x += 5.0;
-                    rect.max.x -= 5.0;
-
-                    ui.painter().rect(
-                        rect,
-                        3.0,
-                        ui.ctx().style().visuals.window_fill(),
-                        Stroke::new(1.0, Color32::BLACK),
-                    );
+                    let rect = ui.available_rect_before_wrap();
+                    TextEdit::singleline(&mut self.text_code)
+                        .desired_width(rect.width())
+                        .ui(ui);
                 });
 
                 ui.with_layout(egui::Layout::top_down_justified(Align::LEFT), |ui| {
-                    let mut rect = ui.available_rect_before_wrap();
-                    rect.min.y += 1.0;
-                    rect.max.y -= 1.0;
+                    let rect = ui.available_rect_before_wrap();
 
                     // 画矩形
                     ui.painter().rect(
@@ -132,6 +135,9 @@ impl epi::App for MyApp {
         // 设置主题
         ctx.set_visuals(Visuals::light());
         ctx.set_pixels_per_point(10.0);
+
+        // 调试
+        ctx.set_debug_on_hover(true);
 
         // 设置字体
         let mut fonts = FontDefinitions::default();
