@@ -69,7 +69,7 @@ impl epi::App for MyApp {
         "你好呀！"
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, frame: &mut epi::Frame<'_>) {
+    fn update(&mut self, ctx: &egui::Context, frame: &epi::Frame) {
         // frame history
         self.frame_history
             .on_new_frame(ctx.input().time, frame.info().cpu_usage);

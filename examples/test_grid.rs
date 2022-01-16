@@ -47,11 +47,9 @@ impl MyApp {
                     // 代码实现仿按钮
 
                     // 创建文字
-                    let text = WidgetText::RichText(
-                        RichText::new("测试工位").color(Color32::LIGHT_RED),
-                    );
                     let text =
-                        text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
+                        WidgetText::RichText(RichText::new("测试工位").color(Color32::LIGHT_RED));
+                    let text = text.into_galley(ui, None, ui.available_width(), TextStyle::Button);
 
                     // 分配文字区域
                     // let size = text.size() + vec2(20.0, 0.0);
@@ -128,8 +126,8 @@ impl epi::App for MyApp {
 
     fn setup(
         &mut self,
-        ctx: &egui::CtxRef,
-        _frame: &mut epi::Frame<'_>,
+        ctx: &egui::Context,
+        _frame: &epi::Frame,
         _storage: Option<&dyn epi::Storage>,
     ) {
         // 设置主题
@@ -153,7 +151,7 @@ impl epi::App for MyApp {
         ctx.set_fonts(fonts);
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
         // 设置像素
         ctx.set_pixels_per_point(2.0);
         egui::CentralPanel::default().show(ctx, |ui| self.ui(ui));

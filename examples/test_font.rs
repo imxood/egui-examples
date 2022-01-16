@@ -22,24 +22,33 @@ impl epi::App for MyApp {
 
     fn setup(
         &mut self,
-        ctx: &egui::CtxRef,
-        _frame: &mut epi::Frame<'_>,
+        ctx: &egui::Context,
+        _frame: &epi::Frame,
         _storage: Option<&dyn epi::Storage>,
     ) {
         let mut fonts = FontDefinitions::default();
+
         fonts.font_data.insert(
             "DroidSansFallbackFull".to_owned(),
             FontData::from_static(include_bytes!("../fonts/DroidSansFallbackFull.ttf")),
         ); // .ttf and .otf supported
-        fonts
+
+        fonts.font_data.insert(
+            "UKIJCJK".to_owned(),
+            FontData::from_static(include_bytes!("../fonts/UKIJCJK.ttf")),
+        );
+
+        let main_fonts = fonts
             .fonts_for_family
             .get_mut(&FontFamily::Proportional)
-            .unwrap()
-            .insert(0, "DroidSansFallbackFull".to_owned());
+            .unwrap();
+
+        main_fonts.insert(0, "DroidSansFallbackFull".to_owned());
+        main_fonts.insert(1, "UKIJCJK".to_owned());
         ctx.set_fonts(fonts);
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
         let Self { label } = self;
 
         egui::CentralPanel::default().show(ctx, |ui| {
