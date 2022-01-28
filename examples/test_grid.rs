@@ -144,7 +144,7 @@ impl epi::App for MyApp {
             FontData::from_static(include_bytes!("../fonts/DroidSansFallbackFull.ttf")),
         ); // .ttf and .otf supported
         fonts
-            .fonts_for_family
+            .families
             .get_mut(&FontFamily::Proportional)
             .unwrap()
             .insert(0, "DroidSansFallbackFull".to_owned());

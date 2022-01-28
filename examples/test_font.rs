@@ -17,7 +17,7 @@ impl Default for MyApp {
 
 impl epi::App for MyApp {
     fn name(&self) -> &str {
-        "你好呀！"
+        "你好呀!"
     }
 
     fn setup(
@@ -38,10 +38,7 @@ impl epi::App for MyApp {
             FontData::from_static(include_bytes!("../fonts/UKIJCJK.ttf")),
         );
 
-        let main_fonts = fonts
-            .fonts_for_family
-            .get_mut(&FontFamily::Proportional)
-            .unwrap();
+        let main_fonts = fonts.families.get_mut(&FontFamily::Proportional).unwrap();
 
         main_fonts.insert(0, "DroidSansFallbackFull".to_owned());
         main_fonts.insert(1, "UKIJCJK".to_owned());
@@ -71,7 +68,7 @@ impl epi::App for MyApp {
                 .resizable(false)
                 .collapsible(false)
                 .anchor(Align2::CENTER_CENTER, [0.0, -50.0])
-                .show(ctx, |ui| {});
+                .show(ctx, |_ui| {});
         });
     }
 }
