@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+channel-server = "0.1.0"
 # eframe = "0.15.0" # Gives us egui, epi and web+native backends
 eframe = { git = "https://github.com/emilk/egui", branch = "master" }
 serde = { version = "1", features = ["derive"], optional = true }
