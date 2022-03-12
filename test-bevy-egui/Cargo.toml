@@ -7,4 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.6" }
-bevy_egui = { version = "0.11" }
+bevy_egui = { version = "0.12" }
+colorsys = "0.6.5"
+image = "0.24.1"
+winit = "0.26.1"

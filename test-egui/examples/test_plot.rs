@@ -2,8 +2,7 @@
 
 use eframe::{
     egui::{
-        self, emath::RectTransform, plot::Plot, pos2, vec2, Color32, Frame, Pos2, Rect, Sense,
-        Shape, Ui,
+        self, Frame, Ui,
     },
     epi,
 };

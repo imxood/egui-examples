@@ -6,12 +6,15 @@ use bevy::{
 };
 use bevy_egui::{
     egui::{
-        self, vec2, Align, CollapsingHeader, Color32, Direction, FontData, FontDefinitions,
-        FontFamily, Label, Layout, ScrollArea, Sense, SidePanel, TopBottomPanel, Ui, Visuals,
-        Widget,
+        Align, CollapsingHeader, Direction, FontData, FontDefinitions, FontFamily, Label,
+        Layout, ScrollArea, Sense, SidePanel, TopBottomPanel, Ui, Widget,
     },
     EguiContext, EguiPlugin, EguiSettings,
 };
+use theme::Theme;
+use winit::window::Icon;
+
+mod theme;
 
 fn main() {
     App::new()
@@ -22,7 +25,8 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_startup_system(init_egui)
+        .add_startup_system(icon_setup)
+        .add_startup_system(egui_setup)
         .add_system(ui)
         .run();
 }
@@ -32,6 +36,7 @@ struct UiState {
     maximized: bool,
     window_mode: WindowMode,
     scale_factor: f64,
+    theme: Theme,
 }
 
 impl Default for UiState {
@@ -46,11 +51,31 @@ impl Default for UiState {
             maximized: true,
             window_mode: WindowMode::Windowed,
             scale_factor: 1.25,
+            theme: Theme::default(),
         }
     }
 }
 
-fn init_egui(
+fn icon_setup(windows: Res<WinitWindows>) {
+    let primary = windows.get_window(WindowId::primary()).unwrap();
+
+    // here we use the `image` crate to load our icon data from a png file
+    // this is not a very bevy-native solution, but it will do
+    let (icon_rgba, icon_width, icon_height) = {
+        let image = image::load_from_memory(include_bytes!("../../resources/logo.jpg"))
+            .expect("Failed to open icon path")
+            .into_rgba8();
+        let (width, height) = image.dimensions();
+        let rgba = image.into_raw();
+        (rgba, width, height)
+    };
+
+    let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap();
+
+    primary.set_window_icon(Some(icon));
+}
+
+fn egui_setup(
     mut egui_ctx: ResMut<EguiContext>,
     mut egui_settings: ResMut<EguiSettings>,
     mut windows: ResMut<Windows>,
@@ -73,17 +98,13 @@ fn init_egui(
             "../../resources/fonts/DroidSansFallbackFull.ttf"
         )),
     );
-    if let Some(font) = fonts
-        .fonts_for_family
-        // .families
-        .get_mut(&FontFamily::Proportional)
-    {
+    if let Some(font) = fonts.families.get_mut(&FontFamily::Proportional) {
         font.insert(0, "DroidSansFallbackFull".to_owned());
     }
 
     ctx.set_fonts(fonts);
 
-    ctx.set_visuals(Visuals::dark());
+    ctx.set_style(ui_state.theme.light_style_clone());
 }
 
 fn titlebar(
@@ -198,31 +219,5 @@ fn ui(
                         );
                     });
             });
-        });
-
-    egui::Window::new("basic_window")
-        .default_height(500.0)
-        .show(ctx, |ui| {
-            let mut style = (*ctx.style()).clone();
-            // 按钮背景色
-            style.visuals.widgets.inactive.bg_fill = Color32::from_rgb(25, 66, 124);
-            // 窗口背景色
-            style.visuals.widgets.noninteractive.bg_fill = Color32::from_rgb(3, 45, 100);
-            // 窗口边框颜色
-            style.visuals.widgets.noninteractive.bg_stroke.color =
-                Color32::from_rgba_premultiplied(46, 46, 46, 0);
-            // 字体颜色
-            style.visuals.widgets.noninteractive.fg_stroke.color = Color32::WHITE;
-            // 鼠标经过时 按钮背景颜色
-            style.visuals.widgets.hovered.bg_fill = Color32::from_rgb(4, 148, 210);
-            // 按钮被激活时, 背景颜色
-            style.visuals.widgets.active.bg_fill = Color32::from_rgb(37, 95, 226);
-
-            // 设置间距
-            style.spacing.button_padding = vec2(16.0, 4.0);
-
-            style.ui(ui);
-
-            ctx.set_style(style);
         });
 }
