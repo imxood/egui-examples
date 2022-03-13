@@ -1,6 +1,6 @@
 use bevy::window::WindowMode;
 
-use super::setting_ui::SettingWindow;
+use super::{setting_ui::SettingWindow, titlebar_ui::Titlebar};
 use crate::resources::theme::Theme;
 
 pub struct UiState {
@@ -8,6 +8,7 @@ pub struct UiState {
     pub window_mode: WindowMode,
     pub scale_factor: f64,
     pub theme: Theme,
+    pub titlebar: Titlebar,
     pub setting_window: SettingWindow,
 }
 
@@ -18,6 +19,7 @@ impl Default for UiState {
             window_mode: WindowMode::Windowed,
             scale_factor: 1.25,
             theme: Theme::default(),
+            titlebar: Titlebar::default(),
             setting_window: Default::default(),
         }
     }

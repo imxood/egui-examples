@@ -1,4 +1,4 @@
-use bevy_egui::egui::{FontData, FontDefinitions, FontFamily, TextStyle};
+use bevy_egui::egui::{FontData, FontDefinitions, FontFamily};
 
 use crate::defines::fonts::FONT_CHINESE;
 

@@ -1,19 +1,18 @@
 use bevy::{
     app::AppExit,
     prelude::*,
-    window::{WindowId, WindowMode},
+    window::{WindowId},
     winit::WinitWindows,
 };
 use bevy_egui::{
     egui::{
-        Align, CollapsingHeader, Direction, FontData, FontDefinitions, FontFamily, FontId, Label,
-        Layout, RichText, ScrollArea, Sense, SidePanel, TopBottomPanel, Ui, Widget,
+        CentralPanel, Label, Sense, SidePanel, TopBottomPanel, Widget,
     },
     EguiContext, EguiPlugin, EguiSettings,
 };
 use defines::icons::ICON_LOGO;
-use resources::{fonts::load_fonts, theme::Theme};
-use ui::{setting_ui::SettingWindow, titlebar_ui::titlebar, ui_state::UiState};
+use resources::{fonts::load_fonts};
+use ui::{titlebar_ui::Titlebar, ui_state::UiState};
 use winit::window::Icon;
 
 mod defines;
@@ -85,22 +84,28 @@ fn ui(
     let ctx = egui_ctx.ctx_mut();
 
     TopBottomPanel::top("top_panel").show(ctx, |ui| {
-        titlebar(ui, exit, windows, &mut ui_state, winit_windows)
+        Titlebar::show(ctx, ui, exit, windows, &mut ui_state, winit_windows)
     });
 
     SidePanel::right("right_side_panel")
         .min_width(200.0)
         .default_width(250.0)
         .show(ctx, |ui| {
-            // 有click的response, 都可以使用 context_menu
-            Label::new("右击我?")
-                .sense(Sense::click())
-                .ui(ui)
-                .context_menu(|ui| {
-                    ui.menu_button("Are you ok?", |ui| if ui.button("I'm fine").clicked() {});
-                    if ui.button("I'm fine").clicked() {}
-                });
+            ui.horizontal(|ui| {
+                // 有click的response, 都可以使用 context_menu
+                Label::new("右击我?")
+                    .sense(Sense::click())
+                    .ui(ui)
+                    .context_menu(|ui| {
+                        ui.menu_button("Are you ok?", |ui| if ui.button("I'm fine").clicked() {});
+                        if ui.button("I'm fine").clicked() {}
+                    });
+            });
         });
+
+    CentralPanel::default().show(ctx, |ui| {
+        ui.horizontal(|_ui| {});
+    });
 
     ui_state.setting_window.show(ctx);
 }
