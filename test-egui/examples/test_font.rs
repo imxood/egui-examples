@@ -31,13 +31,13 @@ impl epi::App for MyApp {
         fonts.font_data.insert(
             "DroidSansFallbackFull".to_owned(),
             FontData::from_static(include_bytes!(
-                "../../resources/fonts/DroidSansFallbackFull.ttf"
+                "../../misc/fonts/DroidSansFallbackFull.ttf"
             )),
         ); // .ttf and .otf supported
 
         fonts.font_data.insert(
             "UKIJCJK".to_owned(),
-            FontData::from_static(include_bytes!("../../resources/fonts/UKIJCJK.ttf")),
+            FontData::from_static(include_bytes!("../../misc/fonts/UKIJCJK.ttf")),
         );
 
         let main_fonts = fonts.families.get_mut(&FontFamily::Proportional).unwrap();
