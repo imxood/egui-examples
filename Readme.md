@@ -12,7 +12,9 @@
 cargo run -p test-bevy-egui
 ```
 
-![](docs/Readme/2022-03-12-22-03-30.png)
+![](docs/Readme/2022-03-13-17-56-41.png)
+
+![](docs/Readme/2022-03-13-18-07-12.png)
 
 ## egui 的简单demo
 
@@ -20,4 +22,4 @@ cargo run -p test-bevy-egui
 cargo run -p test-egui --example test_shape
 ```
 
-![](docs/develop/sources/egui-examples/Readme/2022-03-12-22-08-30.png)
+![](docs/Readme/2022-03-12-22-08-30.png)

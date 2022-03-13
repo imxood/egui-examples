@@ -1,17 +1,13 @@
-use bevy::{
-    app::AppExit,
-    prelude::*,
-    window::{WindowId},
-    winit::WinitWindows,
-};
+use bevy::{app::AppExit, prelude::*, window::WindowId, winit::WinitWindows};
 use bevy_egui::{
     egui::{
-        CentralPanel, Label, Sense, SidePanel, TopBottomPanel, Widget,
+        style::Margin, CentralPanel, Color32, Frame, Label, Sense, SidePanel,
+        TopBottomPanel, Widget,
     },
     EguiContext, EguiPlugin, EguiSettings,
 };
 use defines::icons::ICON_LOGO;
-use resources::{fonts::load_fonts};
+use resources::fonts::load_fonts;
 use ui::{titlebar_ui::Titlebar, ui_state::UiState};
 use winit::window::Icon;
 
@@ -103,7 +99,14 @@ fn ui(
             });
         });
 
-    CentralPanel::default().show(ctx, |ui| {
+    // 设置背景
+    let frame = Frame {
+        margin: Margin::symmetric(8.0, 8.0),
+        fill: Color32::LIGHT_GRAY,
+        ..Default::default()
+    };
+
+    CentralPanel::default().frame(frame).show(ctx, |ui| {
         ui.horizontal(|_ui| {});
     });
 
