@@ -1,8 +1,15 @@
 #![windows_subsystem = "windows"]
 
 use eframe::{
+<<<<<<< HEAD:examples/test_plot.rs
     egui::{self, Ui},
     epi, Frame,
+=======
+    egui::{
+        self, Frame, Ui,
+    },
+    epi,
+>>>>>>> 612b68aad580ffabb8fc826ba0316bc09b2a11eb:test-egui/examples/test_plot.rs
 };
 use test_egui::frame_history::FrameHistory;
 
