@@ -10,7 +10,11 @@ fn main() {
     let native_options = eframe::NativeOptions {
         ..Default::default()
     };
-    eframe::run_native(Box::new(MyApp::default()), native_options);
+    eframe::run_native(
+        "hello",
+        native_options,
+        Box::new(|cc| Box::new(MyApp::new(cc))),
+    );
 }
 
 pub struct MyApp {

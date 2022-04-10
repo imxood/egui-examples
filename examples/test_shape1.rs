@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
-use eframe::{egui, epi};
+use eframe::{egui, epi, Frame};
 use egui::{
     epaint::{Mesh, Vertex},
     vec2, Color32, Pos2, Rect, Sense, Shape,
@@ -9,12 +9,14 @@ use egui::{
 #[derive(Default)]
 struct MyApp {}
 
-impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "My egui App"
+impl MyApp {
+    fn new(_cc: &eframe::CreationContext) -> Self {
+        Self::default()
     }
+}
 
-    fn update(&mut self, ctx: &egui::Context, frame: &epi::Frame) {
+impl epi::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("test paint UV");
 
@@ -80,6 +82,10 @@ impl epi::App for MyApp {
 }
 
 fn main() {
-    let options = eframe::NativeOptions::default();
-    eframe::run_native(Box::new(MyApp::default()), options);
+    let native_options = eframe::NativeOptions::default();
+    eframe::run_native(
+        "hello",
+        native_options,
+        Box::new(|cc| Box::new(MyApp::new(cc))),
+    );
 }

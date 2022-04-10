@@ -2,10 +2,9 @@
 
 use eframe::{
     egui::{
-        self, emath::RectTransform, epaint::Mesh, pos2, vec2, Color32, Frame, Pos2, Rect, Sense,
-        Shape, Ui,
+        self, emath::RectTransform, epaint::Mesh, pos2, vec2, Color32, Pos2, Rect, Sense, Shape, Ui,
     },
-    epi,
+    epi, Frame,
 };
 use test_egui::frame_history::FrameHistory;
 
@@ -13,13 +12,23 @@ fn main() {
     let native_options = eframe::NativeOptions {
         ..Default::default()
     };
-    eframe::run_native(Box::new(MyApp::default()), native_options);
+    eframe::run_native(
+        "hello",
+        native_options,
+        Box::new(|cc| Box::new(MyApp::new(cc))),
+    );
 }
 
 #[derive(Default)]
 pub struct MyApp {
     frame_history: FrameHistory,
     run_mode: RunMode,
+}
+
+impl MyApp {
+    fn new(_cc: &eframe::CreationContext) -> Self {
+        Self::default()
+    }
 }
 
 impl MyApp {
@@ -90,11 +99,7 @@ impl MyApp {
 }
 
 impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "你好呀！"
-    }
-
-    fn update(&mut self, ctx: &egui::Context, frame: &epi::Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut Frame) {
         // frame history
         self.frame_history
             .on_new_frame(ctx.input().time, frame.info().cpu_usage);
