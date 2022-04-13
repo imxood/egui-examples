@@ -3,9 +3,9 @@
 use std::ops::RangeInclusive;
 
 use eframe::{
-    egui::{self, vec2, Context, Frame, Id, InnerResponse, LayerId, Layout, ScrollArea, Ui},
+    egui::{self, vec2, Context, Frame, Id, InnerResponse, LayerId, Layout, ScrollArea, Ui, FontData, FontDefinitions, Visuals},
     emath::Align,
-    epaint::{pos2, Color32, Pos2, Rect, Stroke},
+    epaint::{pos2, Color32, Pos2, Rect, Stroke, FontFamily},
     epi,
 };
 
@@ -77,12 +77,36 @@ impl Default for MyApp {
     }
 }
 
-impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "你好呀!"
-    }
+impl MyApp {
+    fn new(cc: &eframe::CreationContext) -> Box<Self> {
+        let app = Self::default();
+        let ctx = &cc.egui_ctx;
 
-    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
+        // 设置主题
+        ctx.set_visuals(Visuals::light());
+        ctx.set_pixels_per_point(10.0);
+
+        // 调试
+        ctx.set_debug_on_hover(true);
+
+        // 设置字体
+        let mut fonts = FontDefinitions::default();
+        fonts.font_data.insert(
+            "DroidSansFallbackFull".to_owned(),
+            FontData::from_static(include_bytes!("../../misc/fonts/DroidSansFallbackFull.ttf")),
+        ); // .ttf and .otf supported
+        fonts
+            .families
+            .get_mut(&FontFamily::Proportional)
+            .unwrap()
+            .insert(0, "DroidSansFallbackFull".to_owned());
+        ctx.set_fonts(fonts);
+        Box::new(app)
+    }
+}
+
+impl epi::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut epi::Frame) {
         Panel::new("custom_panel")
             .set_pos(Rect::from_min_size(pos2(100.0, 100.0), vec2(200.0, 100.0)))
             .show(ctx, |ui| {
@@ -109,9 +133,5 @@ fn main() {
         initial_window_size: Some(vec2(200.0, 150.0)),
         ..Default::default()
     };
-    eframe::run_native(
-        "hello",
-        native_options,
-        Box::new(|cc| Box::new(MyApp::new(cc))),
-    );
+    eframe::run_native("hello", native_options, Box::new(|cc| MyApp::new(cc)));
 }

@@ -123,7 +123,7 @@ impl epi::App for MyApp {
         });
 
         egui::CentralPanel::default()
-            .frame(Frame::dark_canvas(&ctx.style()))
+            .frame(egui::Frame::dark_canvas(&ctx.style()))
             .show(ctx, |ui| self.ui(ui));
 
         let events = &ctx.output().events;

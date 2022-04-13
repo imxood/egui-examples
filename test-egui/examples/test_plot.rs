@@ -1,15 +1,8 @@
 #![windows_subsystem = "windows"]
 
 use eframe::{
-<<<<<<< HEAD:examples/test_plot.rs
-    egui::{self, Ui},
-    epi, Frame,
-=======
-    egui::{
-        self, Frame, Ui,
-    },
+    egui::{self, Frame, Ui},
     epi,
->>>>>>> 612b68aad580ffabb8fc826ba0316bc09b2a11eb:test-egui/examples/test_plot.rs
 };
 use test_egui::frame_history::FrameHistory;
 
@@ -79,7 +72,7 @@ impl MyApp {
 }
 
 impl epi::App for MyApp {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut epi::Frame) {
         // frame history
         self.frame_history
             .on_new_frame(ctx.input().time, frame.info().cpu_usage);

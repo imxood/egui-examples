@@ -15,21 +15,23 @@ impl Default for MyApp {
 }
 
 impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "你好呀!"
-    }
-
-    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
-        egui::TopBottomPanel::top("top-panel").show(ctx, |ui| {
-            if ui.button("top side").clicked() {
-                ui.label("clicked");
-            }
-        });
-        egui::TopBottomPanel::bottom("bottom-panel").show(ctx, |ui| {
-            if ui.button("bottom side").clicked() {
-                ui.label("clicked");
-            }
-        });
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut epi::Frame) {
+        egui::TopBottomPanel::bottom("bottom-panel")
+            .resizable(true)
+            .show(ctx, |ui| {
+                if ui.button("bottom side").clicked() {
+                    ui.label("clicked");
+                }
+                ui.allocate_space(ui.available_size());
+            });
+        egui::TopBottomPanel::top("top-panel")
+            .resizable(true)
+            .show(ctx, |ui| {
+                if ui.button("top side").clicked() {
+                    ui.label("clicked");
+                }
+                ui.allocate_space(ui.available_size());
+            });
         egui::SidePanel::left("left-panel").show(ctx, |ui| {
             if ui.button("left side").clicked() {
                 ui.label("clicked");
@@ -37,9 +39,8 @@ impl epi::App for MyApp {
             ui.horizontal(|ui| {
                 ui.painter()
                     .rect_stroke(ui.available_rect_before_wrap(), 0.0, (1.0, Color32::RED));
+                ui.allocate_space(ui.available_size());
             });
-            // ui.vertical_centered(|ui| {
-            // });
         });
         egui::SidePanel::right("right-panel").show(ctx, |ui| {
             ui.painter()
@@ -90,8 +91,8 @@ fn main() {
         ..Default::default()
     };
     eframe::run_native(
-        "hello",
+        "你好呀!",
         native_options,
-        Box::new(|cc| Box::new(MyApp::new(cc))),
+        Box::new(|cc| Box::new(MyApp::default())),
     );
 }

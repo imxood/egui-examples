@@ -10,11 +10,7 @@ fn main() {
     let native_options = eframe::NativeOptions {
         ..Default::default()
     };
-    eframe::run_native(
-        "hello",
-        native_options,
-        Box::new(|cc| Box::new(MyApp::new(cc))),
-    );
+    eframe::run_native("hello", native_options, Box::new(|cc| MyApp::new(cc)));
 }
 
 pub struct MyApp {
@@ -121,19 +117,11 @@ impl MyApp {
                 ui.end_row();
             });
     }
-}
 
-impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "你好呀！"
-    }
+    fn new(cc: &eframe::CreationContext) -> Box<Self> {
+        let app = Self::default();
+        let ctx = &cc.egui_ctx;
 
-    fn setup(
-        &mut self,
-        ctx: &egui::Context,
-        _frame: &epi::Frame,
-        _storage: Option<&dyn epi::Storage>,
-    ) {
         // 设置主题
         ctx.set_visuals(Visuals::light());
         ctx.set_pixels_per_point(10.0);
@@ -153,9 +141,12 @@ impl epi::App for MyApp {
             .unwrap()
             .insert(0, "DroidSansFallbackFull".to_owned());
         ctx.set_fonts(fonts);
+        Box::new(app)
     }
+}
 
-    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
+impl epi::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut epi::Frame) {
         // 设置像素
         ctx.set_pixels_per_point(2.0);
         egui::CentralPanel::default().show(ctx, |ui| self.ui(ui));

@@ -1,5 +1,5 @@
 use eframe::{
-    egui::{self, vec2, Align2, FontData, FontDefinitions, FontFamily},
+    egui::{self, vec2, Align2, FontData, FontDefinitions, FontFamily, Visuals},
     epi,
 };
 
@@ -15,39 +15,36 @@ impl Default for MyApp {
     }
 }
 
-impl epi::App for MyApp {
-    fn name(&self) -> &str {
-        "你好呀!"
-    }
+impl MyApp {
+    fn new(cc: &eframe::CreationContext) -> Box<Self> {
+        let app = Self::default();
+        let ctx = &cc.egui_ctx;
 
-    fn setup(
-        &mut self,
-        ctx: &egui::Context,
-        _frame: &epi::Frame,
-        _storage: Option<&dyn epi::Storage>,
-    ) {
+        // 设置主题
+        ctx.set_visuals(Visuals::light());
+        ctx.set_pixels_per_point(10.0);
+
+        // 调试
+        ctx.set_debug_on_hover(true);
+
+        // 设置字体
         let mut fonts = FontDefinitions::default();
-
         fonts.font_data.insert(
             "DroidSansFallbackFull".to_owned(),
-            FontData::from_static(include_bytes!(
-                "../../misc/fonts/DroidSansFallbackFull.ttf"
-            )),
+            FontData::from_static(include_bytes!("../../misc/fonts/DroidSansFallbackFull.ttf")),
         ); // .ttf and .otf supported
-
-        fonts.font_data.insert(
-            "UKIJCJK".to_owned(),
-            FontData::from_static(include_bytes!("../../misc/fonts/UKIJCJK.ttf")),
-        );
-
-        let main_fonts = fonts.families.get_mut(&FontFamily::Proportional).unwrap();
-
-        main_fonts.insert(0, "DroidSansFallbackFull".to_owned());
-        main_fonts.insert(1, "UKIJCJK".to_owned());
+        fonts
+            .families
+            .get_mut(&FontFamily::Proportional)
+            .unwrap()
+            .insert(0, "DroidSansFallbackFull".to_owned());
         ctx.set_fonts(fonts);
+        Box::new(app)
     }
+}
 
-    fn update(&mut self, ctx: &egui::Context, _frame: &epi::Frame) {
+impl epi::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut epi::Frame) {
         let Self { label } = self;
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -80,9 +77,5 @@ fn main() {
         initial_window_size: Some(vec2(200.0, 150.0)),
         ..Default::default()
     };
-    eframe::run_native(
-        "hello",
-        native_options,
-        Box::new(|cc| Box::new(MyApp::new(cc))),
-    );
+    eframe::run_native("hello", native_options, Box::new(|cc| MyApp::new(cc)));
 }
